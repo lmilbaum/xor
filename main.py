@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,;:!?'\"--()"
+ALLOWED_BYTES = {ord(ch) for ch in ALLOWED_CHARS}
+
 
 def encrypt(text, key):
     return [
@@ -15,19 +18,14 @@ def decrypt(nums, key):
     )
 
 
-def is_valid_char(x):
-    c = chr(x)
-    return c.isalpha() or c in " .,;:!?'\"--()"
-
-
 def possible_key_bytes(nums):
-    candidates = []
-
-    for k in range(256):
-        if all(is_valid_char(n ^ k) for n in nums):
-            candidates.append(k)
-
-    return candidates
+    candidates = None
+    for n in nums:
+        ks = {n ^ p for p in ALLOWED_BYTES}
+        candidates = ks if candidates is None else (candidates & ks)
+        if not candidates:
+            return []
+    return sorted(candidates)
 
 
 def recover_key(nums, key_len):
